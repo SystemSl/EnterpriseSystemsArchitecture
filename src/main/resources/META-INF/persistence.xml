@@ -10,9 +10,12 @@
         <class>com.example.model.Player</class>
         <class>com.example.model.Guild</class>
 
+        <shared-cache-mode>NONE</shared-cache-mode>
+
         <properties>
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>
 </persistence>
