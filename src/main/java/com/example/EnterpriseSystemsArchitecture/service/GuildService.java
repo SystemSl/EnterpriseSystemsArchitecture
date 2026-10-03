@@ -32,13 +32,21 @@ public class GuildService {
     }
 
     public void save(Guild guild) {
-        guildRepository.save(guild);
+        Guild savedGuild = guildRepository.save(guild);
+        if (savedGuild.getLeader() != null) {
+            Player leader = playerRepository.findById(savedGuild.getLeader().getId()).orElse(null);
+            if (leader != null) {
+                leader.setGuild(savedGuild);
+                playerRepository.save(leader);
+            }
+        }
     }
 
     public void delete(Long id) {
         List<Player> members = playerRepository.findByGuildId(id);
         for (Player member : members) {
             member.setGuild(null);
+            playerRepository.save(member);
         }
         guildRepository.deleteById(id);
     }
