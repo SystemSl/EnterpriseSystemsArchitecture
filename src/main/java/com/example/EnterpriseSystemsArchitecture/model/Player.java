@@ -18,6 +18,8 @@ public class Player {
     @Column(name = "character_class", nullable = false)
     private String characterClass;
 
+    private String race;
+
     @ManyToOne
     @JoinColumn(name = "guild_id")
     private Guild guild;
@@ -35,6 +37,9 @@ public class Player {
 
     public String getCharacterClass() { return characterClass; }
     public void setCharacterClass(String characterClass) { this.characterClass = characterClass; }
+
+    public String getRace() { return race; }
+    public void setRace(String race) { this.race = race; }
 
     public Guild getGuild() { return guild; }
     public void setGuild(Guild guild) { this.guild = guild; }

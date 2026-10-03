@@ -32,6 +32,11 @@ public class PlayerService {
         return playerRepository.findByGuildIsNull();
     }
 
+    @Transactional(readOnly = true)
+    public List<Player> findPlayersByGuild(Long guildId) {
+        return playerRepository.findByGuildId(guildId);
+    }
+
     public void save(Player player) {
         playerRepository.save(player);
     }

@@ -2,6 +2,7 @@ package com.example.EnterpriseSystemsArchitecture.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,15 @@ public class Guild {
 
     @OneToMany(mappedBy = "guild")
     private List<Player> players;
+
+    @OneToOne
+    @JoinColumn(name = "leader_id")
+    private Player leader;
+
+    private String description;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt = LocalDate.now();
 
     public Guild() {}
 
@@ -38,4 +48,13 @@ public class Guild {
 
     public List<Player> getPlayers() { return players; }
     public void setPlayers(List<Player> players) { this.players = players; }
+
+    public Player getLeader() { return leader; }
+    public void setLeader(Player leader) { this.leader = leader; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public LocalDate getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
 }
