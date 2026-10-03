@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Управление игроками</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body>
+
+    <div class="nav-bar">
+        <h:link outcome="index" value="Игроки" />
+        <h:link outcome="guilds" value="Гильдии" />
+    </div>
+
+    <h2>Список игроков</h2>
+
+    <h:form id="tableForm">
+        <h:dataTable value="#{playerController.allPlayers}" var="p">
+            <h:column>
+                <f:facet name="header">ID</f:facet>
+                #{p.id}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Никнейм</f:facet>
+                #{p.nickname}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Уровень</f:facet>
+                #{p.level}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Класс</f:facet>
+                #{p.characterClass}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Раса</f:facet>
+                #{p.race}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Гильдия</f:facet>
+                #{p.guild != null ? p.guild.name : 'Без гильдии'}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Действия</f:facet>
+                <h:commandButton value="Ред." action="#{playerController.edit(p)}" styleClass="btn btn-edit" />
+                <h:commandButton value="Удалить" action="#{playerController.delete(p.id)}" styleClass="btn btn-danger" />
+            </h:column>
+        </h:dataTable>
+    </h:form>
+
+    <div class="form-box">
+        <h3>Добавить / Редактировать игрока</h3>
+        <h:form id="addForm">
+            <h:inputHidden value="#{playerController.player.id}" />
+
+            <div class="form-row">
+                <label>Никнейм:</label>
+                <h:inputText value="#{playerController.player.nickname}" required="true" />
+            </div>
+
+            <div class="form-row">
+                <label>Уровень:</label>
+                <h:inputText value="#{playerController.player.level}" required="true" />
+            </div>
+
+            <div class="form-row">
+                <label>Класс:</label>
+                <h:inputText value="#{playerController.player.characterClass}" required="true" />
+            </div>
+
+            <div class="form-row">
+                <label>Раса:</label>
+                <h:inputText value="#{playerController.player.race}" required="true" />
+            </div>
+
+            <div class="form-row">
+                <label>Гильдия:</label>
+                <h:selectOneMenu value="#{playerController.selectedGuildId}">
+                    <f:selectItem itemLabel="-- Без гильдии --" itemValue="" />
+                    <f:selectItems value="#{playerController.allGuilds}" var="g"
+                                   itemValue="#{g.id}" itemLabel="#{g.name}" />
+                </h:selectOneMenu>
+            </div>
+
+            <h:commandButton value="Сохранить" action="#{playerController.save}" styleClass="btn btn-success" />
+        </h:form>
+    </div>
+
+</h:body>
+</html>

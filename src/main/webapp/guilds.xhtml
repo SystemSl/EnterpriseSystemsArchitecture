@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Управление гильдиями</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body>
+
+    <div class="nav-bar">
+        <h:link outcome="index" value="Игроки" />
+        <h:link outcome="guilds" value="Гильдии" />
+    </div>
+
+    <h2>Список гильдий</h2>
+
+    <h:form id="guildTableForm">
+        <h:dataTable value="#{guildController.allGuilds}" var="g">
+            <h:column>
+                <f:facet name="header">ID</f:facet>
+                #{g.id}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Название</f:facet>
+                #{g.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Лидер</f:facet>
+                #{g.leader != null ? g.leader.nickname : 'Нет лидера'}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Рейтинг</f:facet>
+                #{g.rating}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Описание</f:facet>
+                #{g.description}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Дата создания</f:facet>
+                #{g.createdAt}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Действия</f:facet>
+                <h:commandButton value="Ред." action="#{guildController.edit(g)}" styleClass="btn btn-edit" />
+                <h:commandButton value="Удалить" action="#{guildController.delete(g.id)}" styleClass="btn btn-danger" />
+            </h:column>
+        </h:dataTable>
+    </h:form>
+
+    <div class="form-box">
+        <h3>Добавить / Редактировать гильдию</h3>
+        <h:form id="guildAddForm">
+            <h:inputHidden value="#{guildController.guild.id}" />
+
+            <div class="form-row">
+                <label>Название гильдии:</label>
+                <h:inputText value="#{guildController.guild.name}" required="true" />
+            </div>
+
+            <div class="form-row">
+                <label>Лидер гильдии (игрок):</label>
+                <h:selectOneMenu value="#{guildController.selectedLeaderId}" required="true">
+                    <f:selectItem itemLabel="-- Выберите лидера --" itemValue="" />
+                    <f:selectItems value="#{guildController.candidateLeaders}" var="p"
+                                   itemValue="#{p.id}" itemLabel="#{p.nickname} (lvl #{p.level})" />
+                </h:selectOneMenu>
+            </div>
+
+            <div class="form-row">
+                <label>Рейтинг:</label>
+                <h:inputText value="#{guildController.guild.rating}" />
+            </div>
+
+            <div class="form-row">
+                <label>Описание:</label>
+                <h:inputTextarea value="#{guildController.guild.description}" rows="3" />
+            </div>
+
+            <h:commandButton value="Сохранить" action="#{guildController.save}" styleClass="btn btn-success" />
+        </h:form>
+    </div>
+
+</h:body>
+</html>
