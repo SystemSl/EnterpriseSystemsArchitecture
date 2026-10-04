@@ -1,6 +1,9 @@
 package com.example.EnterpriseSystemsArchitecture.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.ser.std.ToStringSerializer;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,14 +22,17 @@ public class Guild {
     private int rating;
 
     @OneToMany(mappedBy = "guild")
+    @JsonIgnoreProperties("guild")
     private List<Player> players;
 
     @OneToOne
     @JoinColumn(name = "leader_id")
+    @JsonIgnoreProperties("guild")
     private Player leader;
 
     private String description;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "created_at")
     private LocalDate createdAt = LocalDate.now();
 
