@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Управление игроками</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div class="nav-bar">
+    <a th:href="@{/players}">Игроки</a>
+    <a th:href="@{/guilds}">Гильдии</a>
+</div>
+
+<h2>Список игроков</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Никнейм</th>
+        <th>Уровень</th>
+        <th>Класс</th>
+        <th>Раса</th>
+        <th>Гильдия</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="p : ${allPlayers}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.nickname}"></td>
+        <td th:text="${p.level}"></td>
+        <td th:text="${p.characterClass}"></td>
+        <td th:text="${p.race}"></td>
+        <td th:text="${p.guild != null ? p.guild.name : 'Без гильдии'}"></td>
+        <td>
+            <a th:href="@{/players/edit/{id}(id=${p.id})}" class="btn btn-edit">Ред.</a>
+            <a th:href="@{/players/delete/{id}(id=${p.id})}" class="btn btn-danger"
+               onclick="return confirm('Удалить игрока?')">Удалить</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="form-box">
+    <h3>Добавить / Редактировать игрока</h3>
+    <form th:action="@{/players/save}" th:object="${player}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="form-row">
+            <label>Никнейм:</label>
+            <input type="text" th:field="*{nickname}" required="required" />
+        </div>
+
+        <div class="form-row">
+            <label>Уровень:</label>
+            <input type="number" th:field="*{level}" required="required" />
+        </div>
+
+        <div class="form-row">
+            <label>Класс:</label>
+            <input type="text" th:field="*{characterClass}" required="required" />
+        </div>
+
+        <div class="form-row">
+            <label>Раса:</label>
+            <input type="text" th:field="*{race}" required="required" />
+        </div>
+
+        <div class="form-row">
+            <label>Гильдия:</label>
+            <select name="selectedGuildId">
+                <option value="">-- Без гильдии --</option>
+                <option th:each="g : ${allGuilds}"
+                        th:value="${g.id}"
+                        th:text="${g.name}"
+                        th:selected="${player.guild != null and player.guild.id == g.id}">
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+</div>
+
+</body>
+</html>
