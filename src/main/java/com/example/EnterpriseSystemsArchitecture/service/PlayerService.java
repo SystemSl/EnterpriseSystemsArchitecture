@@ -1,9 +1,12 @@
 package com.example.EnterpriseSystemsArchitecture.service;
 
+import com.example.EnterpriseSystemsArchitecture.config.JmsConfig;
+import com.example.EnterpriseSystemsArchitecture.dto.EntityChangeEvent;
 import com.example.EnterpriseSystemsArchitecture.model.Guild;
 import com.example.EnterpriseSystemsArchitecture.model.Player;
 import com.example.EnterpriseSystemsArchitecture.repository.GuildRepository;
 import com.example.EnterpriseSystemsArchitecture.repository.PlayerRepository;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +17,13 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
-    private final GuildRepository guildRepository; // Добавили для управления гильдиями
+    private final GuildRepository guildRepository;
+    private final JmsTemplate jmsTemplate;
 
-    public PlayerService(PlayerRepository playerRepository, GuildRepository guildRepository) {
+    public PlayerService(PlayerRepository playerRepository, GuildRepository guildRepository, JmsTemplate jmsTemplate) {
         this.playerRepository = playerRepository;
         this.guildRepository = guildRepository;
+        this.jmsTemplate = jmsTemplate;
     }
 
     @Transactional(readOnly = true)
@@ -42,18 +47,27 @@ public class PlayerService {
     }
 
     public void save(Player player) {
+        String action = (player.getId() == null) ? "INSERT" : "UPDATE";
+
         if (player.getId() != null) {
             Player currentDbPlayer = playerRepository.findById(player.getId()).orElse(null);
             if (currentDbPlayer != null) {
                 Guild oldGuild = currentDbPlayer.getGuild();
                 Guild newGuild = player.getGuild();
-                boolean leftGuild = oldGuild != null && (newGuild == null || !oldGuild.getId().equals(newGuild.getId()));
+                boolean leftGuild = oldGuild != null &&
+                        (newGuild == null || !oldGuild.getId().equals(newGuild.getId()));
                 if (leftGuild) {
                     handleLeaderLeaving(oldGuild, player.getId());
                 }
             }
         }
-        playerRepository.save(player);
+
+        Player saved = playerRepository.save(player);
+
+        String details = "Nickname: " + saved.getNickname() + ", Level: " + saved.getLevel() +
+                ", Class: " + saved.getCharacterClass() + ", Race: " + saved.getRace();
+        jmsTemplate.convertAndSend(JmsConfig.ENTITY_EVENTS_TOPIC,
+                new EntityChangeEvent(action, "Player", saved.getId(), details));
     }
 
     public void delete(Long id) {
@@ -64,6 +78,9 @@ public class PlayerService {
                 handleLeaderLeaving(guild, player.getId());
             }
             playerRepository.delete(player);
+
+            jmsTemplate.convertAndSend(JmsConfig.ENTITY_EVENTS_TOPIC,
+                    new EntityChangeEvent("DELETE", "Player", id, "Удален игрок " + player.getNickname()));
         }
     }
 
