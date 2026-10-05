@@ -1,5 +1,6 @@
 package com.example.EnterpriseSystemsArchitecture.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +23,7 @@ public class Player {
 
     @ManyToOne
     @JoinColumn(name = "guild_id")
+    @JsonIgnoreProperties({"players", "leader"})
     private Guild guild;
 
     public Player() {}
