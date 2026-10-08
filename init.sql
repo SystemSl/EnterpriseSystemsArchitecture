@@ -21,3 +21,12 @@ CREATE TABLE guilds (
 ALTER TABLE players
 ADD CONSTRAINT fk_player_guild FOREIGN KEY (guild_id)
     REFERENCES guilds(id) ON DELETE SET NULL;
+
+CREATE TABLE audit_logs (
+    id BIGSERIAL PRIMARY KEY,
+    action_type VARCHAR(20) NOT NULL,
+    entity_name VARCHAR(50) NOT NULL,
+    entity_id BIGINT,
+    details TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
